@@ -1,0 +1,5 @@
+[
+  { "id": "shibir-1", "title": "Summer Shibir 2026",  "start_date": "2026-05-15", "end_date": "2026-05-20", "fee": 1500, "created_at": "2026-01-01" },
+  { "id": "shibir-2", "title": "Winter Shibir 2025",  "start_date": "2025-12-20", "end_date": "2025-12-25", "fee": 1200, "created_at": "2025-10-01" },
+  { "id": "shibir-3", "title": "Annual Retreat 2025",  "start_date": "2025-08-10", "end_date": "2025-08-14", "fee": 2000, "created_at": "2025-06-01" }
+]

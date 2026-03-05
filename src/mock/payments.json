@@ -1,0 +1,12 @@
+[
+  { "id": "p1",  "shibir_id": "shibir-1", "youth_id": "1",  "amount_paid": 1500, "notes": "", "youth": { "id": "1",  "name": "Arjun Patel"    } },
+  { "id": "p2",  "shibir_id": "shibir-1", "youth_id": "2",  "amount_paid": 800,  "notes": "", "youth": { "id": "2",  "name": "Riya Shah"      } },
+  { "id": "p3",  "shibir_id": "shibir-1", "youth_id": "3",  "amount_paid": 0,    "notes": "", "youth": { "id": "3",  "name": "Dev Mehta"      } },
+  { "id": "p4",  "shibir_id": "shibir-1", "youth_id": "4",  "amount_paid": 1500, "notes": "", "youth": { "id": "4",  "name": "Priya Joshi"    } },
+  { "id": "p5",  "shibir_id": "shibir-1", "youth_id": "5",  "amount_paid": 500,  "notes": "", "youth": { "id": "5",  "name": "Karan Desai"    } },
+  { "id": "p6",  "shibir_id": "shibir-1", "youth_id": "6",  "amount_paid": 1500, "notes": "", "youth": { "id": "6",  "name": "Neha Trivedi"   } },
+  { "id": "p7",  "shibir_id": "shibir-1", "youth_id": "7",  "amount_paid": 0,    "notes": "", "youth": { "id": "7",  "name": "Rohan Kapoor"   } },
+  { "id": "p8",  "shibir_id": "shibir-1", "youth_id": "8",  "amount_paid": 1200, "notes": "", "youth": { "id": "8",  "name": "Ananya Singh"   } },
+  { "id": "p9",  "shibir_id": "shibir-1", "youth_id": "9",  "amount_paid": 0,    "notes": "", "youth": { "id": "9",  "name": "Vivek Modi"     } },
+  { "id": "p10", "shibir_id": "shibir-1", "youth_id": "10", "amount_paid": 1500, "notes": "", "youth": { "id": "10", "name": "Shreya Agarwal" } }
+]
