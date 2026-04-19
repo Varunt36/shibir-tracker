@@ -50,16 +50,25 @@ export default function ShibirDetail() {
   const notComing = attendance.filter((a: any) => a.status === 'not_coming').length
   const unsure = attendance.filter((a: any) => a.status === 'unsure').length
 
+  const paidCount = payments.filter((p: any) => Number(p.amount_paid) >= shibir.fee).length
+  const partialCount = payments.filter((p: any) => Number(p.amount_paid) > 0 && Number(p.amount_paid) < shibir.fee).length
+  const unpaidCount = payments.filter((p: any) => Number(p.amount_paid) === 0).length
+
   return (
     <Box>
       <Typography variant="h5" mb={1}>{shibir.title}</Typography>
       <Typography variant="body2" color="text.secondary" mb={1}>
         {shibir.start_date} → {shibir.end_date ?? '?'} · Fee: €{shibir.fee}
       </Typography>
-      <Stack direction="row" spacing={1} mb={2}>
+      <Stack direction="row" spacing={1} mb={1} flexWrap="wrap" useFlexGap>
         <Chip label={`Coming: ${coming}`} color="success" size="small" />
         <Chip label={`Not Coming: ${notComing}`} color="error" size="small" />
         <Chip label={`Unsure: ${unsure}`} color="default" size="small" />
+      </Stack>
+      <Stack direction="row" spacing={1} mb={2} flexWrap="wrap" useFlexGap>
+        <Chip label={`Paid: ${paidCount}`} color="success" size="small" variant="outlined" />
+        <Chip label={`Partial: ${partialCount}`} color="warning" size="small" variant="outlined" />
+        <Chip label={`Unpaid: ${unpaidCount}`} color="error" size="small" variant="outlined" />
       </Stack>
       <Tabs value={tab} onChange={(_: React.SyntheticEvent, v: number) => setTab(v)} sx={{ mb: 2 }}>
         <Tab label="Attendance" />

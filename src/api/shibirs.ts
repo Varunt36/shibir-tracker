@@ -19,6 +19,17 @@ export async function createShibir(shibir: Record<string, unknown>) {
   return data
 }
 
+export async function updateShibir(id: string, patch: Record<string, unknown>) {
+  const { data, error } = await supabase
+    .from('shibirs')
+    .update(patch)
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
 export async function getShibirById(id: string) {
   const { data, error } = await supabase
     .from('shibirs')

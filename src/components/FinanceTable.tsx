@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   Table, TableHead, TableBody, TableRow, TableCell, TableFooter,
-  TextField, Chip, Typography, Button, Box
+  TextField, Chip, Typography, Button, Box, TableSortLabel
 } from '@mui/material'
 import Papa from 'papaparse'
 import { upsertPayment } from '../api/payments'
@@ -26,10 +26,36 @@ function getStatus(paid: number, fee: number): { label: string; color: 'success'
   return { label: 'Unpaid', color: 'error' }
 }
 
+type OrderBy = 'name' | 'status'
+const STATUS_RANK: Record<string, number> = { Paid: 0, Partial: 1, Unpaid: 2 }
+
 export default function FinanceTable({ rows, fee, shibirTitle, onUpdate }: Props) {
   const [values, setValues] = useState<Record<string, string>>(
     Object.fromEntries(rows.map(r => [r.youth_id, String(r.amount_paid)]))
   )
+  const [orderBy, setOrderBy] = useState<OrderBy>('name')
+  const [order, setOrder] = useState<'asc' | 'desc'>('asc')
+
+  function handleSort(column: OrderBy) {
+    if (orderBy === column) {
+      setOrder(o => (o === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setOrderBy(column)
+      setOrder('asc')
+    }
+  }
+
+  const sortedRows = [...rows].sort((a, b) => {
+    let cmp = 0
+    if (orderBy === 'name') {
+      cmp = (a.youth?.name ?? '').localeCompare(b.youth?.name ?? '')
+    } else {
+      const aStatus = getStatus(Number(values[a.youth_id] ?? a.amount_paid), fee).label
+      const bStatus = getStatus(Number(values[b.youth_id] ?? b.amount_paid), fee).label
+      cmp = STATUS_RANK[aStatus] - STATUS_RANK[bStatus]
+    }
+    return order === 'asc' ? cmp : -cmp
+  })
 
   async function handleSave(shibirId: string, youthId: string) {
     await upsertPayment(shibirId, youthId, Number(values[youthId] ?? 0))
@@ -62,14 +88,30 @@ export default function FinanceTable({ rows, fee, shibirTitle, onUpdate }: Props
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
+            <TableCell sortDirection={orderBy === 'name' ? order : false}>
+              <TableSortLabel
+                active={orderBy === 'name'}
+                direction={orderBy === 'name' ? order : 'asc'}
+                onClick={() => handleSort('name')}
+              >
+                Name
+              </TableSortLabel>
+            </TableCell>
             <TableCell>Amount Paid</TableCell>
             <TableCell>Remaining</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell sortDirection={orderBy === 'status' ? order : false}>
+              <TableSortLabel
+                active={orderBy === 'status'}
+                direction={orderBy === 'status' ? order : 'asc'}
+                onClick={() => handleSort('status')}
+              >
+                Status
+              </TableSortLabel>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => {
+          {sortedRows.map(row => {
             const paid = Number(values[row.youth_id] ?? row.amount_paid)
             const remaining = fee - paid
             const status = getStatus(paid, fee)

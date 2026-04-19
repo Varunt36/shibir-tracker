@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import {
   Box, Button, Typography, Card, CardContent, CardActionArea,
   Grid, Dialog, DialogTitle, DialogContent, DialogActions,
-  TextField, Stack, CircularProgress, Chip
+  TextField, Stack, CircularProgress, Chip, IconButton
 } from '@mui/material'
-import { getShibirs, createShibir } from '../api/shibirs'
+import EditIcon from '@mui/icons-material/Edit'
+import { getShibirs, createShibir, updateShibir } from '../api/shibirs'
 
 interface Shibir {
   id: string
@@ -28,6 +29,7 @@ export default function Shibirs() {
   const [shibirs, setShibirs] = useState<Shibir[]>([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<ShibirForm>(EMPTY_FORM)
   const navigate = useNavigate()
 
@@ -40,10 +42,38 @@ export default function Shibirs() {
 
   useEffect(() => { load() }, [])
 
-  async function handleCreate() {
+  function openCreate() {
+    setEditingId(null)
+    setForm(EMPTY_FORM)
+    setDialogOpen(true)
+  }
+
+  function openEdit(s: Shibir) {
+    setEditingId(s.id)
+    setForm({
+      title: s.title,
+      start_date: s.start_date ?? '',
+      end_date: s.end_date ?? '',
+      fee: String(s.fee),
+    })
+    setDialogOpen(true)
+  }
+
+  async function handleSave() {
     if (!form.title.trim() || !form.fee) return
-    await createShibir({ ...form, fee: Number(form.fee) })
+    const payload = {
+      title: form.title,
+      start_date: form.start_date || null,
+      end_date: form.end_date || null,
+      fee: Number(form.fee),
+    }
+    if (editingId) {
+      await updateShibir(editingId, payload)
+    } else {
+      await createShibir(payload)
+    }
     setDialogOpen(false)
+    setEditingId(null)
     setForm(EMPTY_FORM)
     load()
   }
@@ -54,15 +84,23 @@ export default function Shibirs() {
     <Box>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h5">Shibirs</Typography>
-        <Button variant="contained" onClick={() => setDialogOpen(true)}>Create Shibir</Button>
+        <Button variant="contained" onClick={openCreate}>Create Shibir</Button>
       </Stack>
       <Grid container spacing={2}>
         {shibirs.map(s => (
           <Grid size={{ xs: 12, sm: 6, md: 4 }} key={s.id}>
-            <Card>
+            <Card sx={{ position: 'relative' }}>
+              <IconButton
+                size="small"
+                onClick={(e) => { e.stopPropagation(); openEdit(s) }}
+                sx={{ position: 'absolute', top: 4, right: 4, zIndex: 1 }}
+                aria-label="Edit shibir"
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
               <CardActionArea onClick={() => navigate(`/shibirs/${s.id}`)}>
                 <CardContent>
-                  <Typography variant="h6">{s.title}</Typography>
+                  <Typography variant="h6" sx={{ pr: 4 }}>{s.title}</Typography>
                   <Typography variant="body2" color="text.secondary">
                     {s.start_date} → {s.end_date ?? '?'}
                   </Typography>
@@ -75,7 +113,7 @@ export default function Shibirs() {
       </Grid>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Create Shibir</DialogTitle>
+        <DialogTitle>{editingId ? 'Edit Shibir' : 'Create Shibir'}</DialogTitle>
         <DialogContent>
           <TextField fullWidth label="Title *" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} margin="normal" />
           <TextField fullWidth label="Start Date" type="date" value={form.start_date} onChange={e => setForm(f => ({ ...f, start_date: e.target.value }))} margin="normal" InputLabelProps={{ shrink: true }} />
@@ -84,7 +122,7 @@ export default function Shibirs() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleCreate}>Create</Button>
+          <Button variant="contained" onClick={handleSave}>{editingId ? 'Save' : 'Create'}</Button>
         </DialogActions>
       </Dialog>
     </Box>

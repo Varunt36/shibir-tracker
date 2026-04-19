@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   Table, TableHead, TableBody, TableRow, TableCell,
-  Select, MenuItem, Chip, CircularProgress
+  Select, MenuItem, Chip, CircularProgress, TableSortLabel
 } from '@mui/material'
 import { upsertAttendance } from '../api/attendance'
 
@@ -32,6 +32,7 @@ const STATUS_LABELS: Record<Status, string> = {
 
 export default function AttendanceTable({ rows, shibirId, onUpdate }: Props) {
   const [saving, setSaving] = useState<Record<string, boolean>>({})
+  const [order, setOrder] = useState<'asc' | 'desc'>('asc')
 
   async function handleStatusChange(youthId: string, status: Status) {
     setSaving(s => ({ ...s, [youthId]: true }))
@@ -40,17 +41,30 @@ export default function AttendanceTable({ rows, shibirId, onUpdate }: Props) {
     onUpdate()
   }
 
+  const sortedRows = [...rows].sort((a, b) => {
+    const cmp = (a.youth?.name ?? '').localeCompare(b.youth?.name ?? '')
+    return order === 'asc' ? cmp : -cmp
+  })
+
   return (
     <Table size="small">
       <TableHead>
         <TableRow>
-          <TableCell>Name</TableCell>
+          <TableCell sortDirection={order}>
+            <TableSortLabel
+              active
+              direction={order}
+              onClick={() => setOrder(o => (o === 'asc' ? 'desc' : 'asc'))}
+            >
+              Name
+            </TableSortLabel>
+          </TableCell>
           <TableCell>Phone</TableCell>
           <TableCell>Status</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {rows.map(row => (
+        {sortedRows.map(row => (
           <TableRow key={row.youth_id}>
             <TableCell>{row.youth?.name}</TableCell>
             <TableCell>{row.youth?.phone ?? '—'}</TableCell>
