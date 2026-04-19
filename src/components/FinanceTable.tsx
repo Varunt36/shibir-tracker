@@ -93,6 +93,7 @@ export default function FinanceTable({ rows, fee, shibirTitle, onUpdate }: Props
                 active={orderBy === 'name'}
                 direction={orderBy === 'name' ? order : 'asc'}
                 onClick={() => handleSort('name')}
+                sx={{ '& .MuiTableSortLabel-icon': { opacity: `${orderBy === 'name' ? 1 : 0.4} !important` } }}
               >
                 Name
               </TableSortLabel>
@@ -104,6 +105,7 @@ export default function FinanceTable({ rows, fee, shibirTitle, onUpdate }: Props
                 active={orderBy === 'status'}
                 direction={orderBy === 'status' ? order : 'asc'}
                 onClick={() => handleSort('status')}
+                sx={{ '& .MuiTableSortLabel-icon': { opacity: `${orderBy === 'status' ? 1 : 0.4} !important` } }}
               >
                 Status
               </TableSortLabel>
